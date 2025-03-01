@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Life Simulator - Algorithm Documentation</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Algorithm Documentation</h1>
+            <p>Understanding the algorithms and data structures used in the Life Simulator</p>
+        </header>
+        
+        <div class="card">
+            <h2>Overview</h2>
+            <p>
+                This document provides a detailed explanation of the algorithms and data structures used in the Life Simulator application. 
+                The application uses various algorithms and data structures to efficiently manage and visualize data about student subject selections 
+                and their relationships with friends.
+            </p>
+            <a href="index.html" class="nav-button">Back to Simulator</a>
+        </div>
+        
+        <div class="card">
+            <h2>Data Structures Used</h2>
+            
+            <h3>1. Map</h3>
+            <p>
+                Maps are used to store key-value pairs with efficient lookup times. In our application, we use Maps for:
+            </p>
+            <ul>
+                <li>Storing subject data with subject IDs as keys</li>
+                <li>Building adjacency lists in the graph implementation</li>
+                <li>Tracking distances and previous nodes in Dijkstra's algorithm</li>
+            </ul>
+            <p>
+                <strong>Time Complexity:</strong> O(1) for lookup, insertion, and deletion operations (average case).
+            </p>
+            <pre><code>const subjectData = new Map([
+    ["english", {
+        id: "english",
+        name: "English",
+        description: "Compulsory subject focusing on literature, language, and communication skills.",
+        isCompulsory: true,
+        selected: true
+    }],
+    // Additional subjects...
+]);</code></pre>
+            
+            <h3>2. Set</h3>
+            <p>
+                Sets are used to store unique values and provide efficient membership testing. We use Sets for:
+            </p>
+            <ul>
+                <li>Tracking selected subjects</li>
+                <li>Storing friends' subjects for efficient lookup</li>
+                <li>Tracking visited nodes in graph traversal algorithms</li>
+            </ul>
+            <p>
+                <strong>Time Complexity:</strong> O(1) for add, delete, and has operations (average case).
+            </p>
+            <pre><code>// Inside the Friend class
+get subjectSet() {
+    if (!this._subjectSet) {
+        this._subjectSet = new Set(this.subjects);
+    }
+    return this._subjectSet;
+}</code></pre>
+            
+            <h3>3. Tree</h3>
+            <p>
+                A tree is a hierarchical data structure used to represent relationships. We implement a custom tree structure for:
+            </p>
+            <ul>
+                <li>Visualizing friendship connections based on common subjects</li>
+                <li>Organizing friends into groups based on shared interests</li>
+            </ul>
+            <p>
+                <strong>Time Complexity:</strong> O(n) for tree traversal operations where n is the number of nodes.
+            </p>
+            <pre><code>class TreeNode {
+    constructor(value) {
+        this.value = value;
+        this.children = [];
+    }
+
+    addChild(child) {
+        this.children.push(child);
+    }
+}</code></pre>
+            
+            <h3>4. Graph</h3>
+            <p>
+                Graphs are used to represent complex relationships between entities. We implement a graph to:
+            </p>
+            <ul>
+                <li>Model the relationships between subjects based on how many friends take both</li>
+                <li>Find the shortest path between related subjects</li>
+            </ul>
+            <p>
+                <strong>Time Complexity:</strong> Varies by operation; adding vertices and edges is O(1), traversal is O(V+E) where V is the number of vertices and E is the number of edges.
+            </p>
+            <pre><code>class Graph {
+    constructor() {
+        this.adjacencyList = new Map();
+    }
+    
+    addVertex(vertex) {
+        if (!this.adjacencyList.has(vertex)) {
+            this.adjacencyList.set(vertex, []);
+        }
+    }
+    
+    addEdge(vertex1, vertex2, weight = 1) {
+        // Implementation details...
+    }
+}</code></pre>
+            
+            <h3>5. Priority Queue</h3>
+            <p>
+                A priority queue is used in Dijkstra's algorithm to efficiently process nodes in order of their priority (distance).
+            </p>
+            <p>
+                <strong>Time Complexity:</strong> Our implementation uses a simple array with sorting, which has O(n log n) time complexity for sorting operations.
+            </p>
+            <pre><code>class PriorityQueue {
+    constructor() {
+        this.values = [];
+    }
+    
+    enqueue(element, priority) {
+        this.values.push({ element, priority });
+        this.sort();
+    }
+    
+    dequeue() {
+        return this.values.shift();
+    }
+    
+    sort() {
+        this.values.sort((a, b) => a.priority - b.priority);
+    }
+}            </code></pre>
+
+            <h3>2. Dijkstra's Algorithm</h3>
+            <p>
+                Dijkstra's algorithm is used to find the shortest path between nodes in a graph with non-negative edge weights.
+            </p>
+            <p>
+                <strong>Time Complexity:</strong> O((V + E) log V) where V is the number of vertices and E is the number of edges.
+            </p>
+            <p>
+                <strong>Space Complexity:</strong> O(V) for storing distances, previous nodes, and the priority queue.
+            </p>
+            <p>
+                <strong>Application in our project:</strong> Used to find the shortest path between subjects in the subject relationship graph.
+            </p>
+            <pre><code>findShortestPath(startVertex, endVertex) {
+    const distances = new Map();
+    const previous = new Map();
+    const priorityQueue = new PriorityQueue();
+    
+    // Initialize distances map
+    for (let vertex of this.adjacencyList.keys()) {
+        if (vertex === startVertex) {
+            distances.set(vertex, 0);
+            priorityQueue.enqueue(vertex, 0);
+        } else {
+            distances.set(vertex, Infinity);
+            priorityQueue.enqueue(vertex, Infinity);
+        }
+        previous.set(vertex, null);
+    }
+    
+    // Main loop
+    while (!priorityQueue.isEmpty()) {
+        const { element: currentVertex } = priorityQueue.dequeue();
+        
+        if (currentVertex === endVertex) {
+            // Reached the target vertex
+            break;
+        }
+        
+        if (distances.get(currentVertex) === Infinity) {
+            // No path to this vertex
+            break;
+        }
+        
+        // Check neighbors
+        for (let neighbor of this.adjacencyList.get(currentVertex)) {
+            const candidate = distances.get(currentVertex) + neighbor.weight;
+            
+            if (candidate < distances.get(neighbor.node)) {
+                // Found a better path
+                distances.set(neighbor.node, candidate);
+                previous.set(neighbor.node, currentVertex);
+                priorityQueue.enqueue(neighbor.node, candidate);
+            }
+        }
+    }
+    
+    // Build path
+    const path = [];
+    let current = endVertex;
+    
+    while (current !== null) {
+        path.unshift(current);
+        current = previous.get(current);
+    }
+    
+    return {
+        distance: distances.get(endVertex),
+        path: path.length > 1 ? path : []
+    };
+}</code></pre>
+
+            <h3>3. Breadth-First Search (BFS)</h3>
+            <p>
+                BFS is a graph traversal algorithm that explores all vertices at the current depth level before moving to vertices at the next depth level.
+            </p>
+            <p>
+                <strong>Time Complexity:</strong> O(V + E) where V is the number of vertices and E is the number of edges.
+            </p>
+            <p>
+                <strong>Space Complexity:</strong> O(V) for the queue and visited set.
+            </p>
+            <p>
+                <strong>Application in our project:</strong> Used in the friendship tree traversal to calculate node positions.
+            </p>
+            <pre><code>// Tree traversal for layout calculation
+function calculateLayout(node, level = 0, order = 0, siblings = 1) {
+    // Calculate horizontal position
+    let x;
+    
+    if (level === 0) {
+        // Root node is centered
+        x = svgWidth / 2;
+    } else if (level === 1) {
+        // Level 1 nodes are spread evenly
+        const step = svgWidth / (siblings + 1);
+        x = step * (order + 1);
+    } else {
+        // Level 2+ nodes are grouped under their parent
+        const parent = node.parent;
+        const parentChildren = parent.children.length;
+        const step = svgWidth / 10; // Smaller step for level 2+
+        const offset = (order - (parentChildren - 1) / 2) * step;
+        x = parent.x + offset;
+    }
+    
+    // Calculate vertical position
+    const y = 50 + level * levelHeight;
+    
+    // Store position
+    node.x = x;
+    node.y = y;
+    
+    // Calculate layout for children (BFS-like traversal)
+    const childCount = node.children.length;
+    node.children.forEach((child, i) => {
+        child.parent = node; // Set parent reference
+        calculateLayout(child, level + 1, i, childCount);
+    });
+    
+    return node;
+}</code></pre>
+        </div>
+        
+        <div class="card">
+            <h2>Algorithm Analysis and Optimizations</h2>
+            
+            <h3>Time Complexity Analysis</h3>
+            <p>
+                The overall time complexity of our application is determined by the most computationally intensive operations:
+            </p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Operation</th>
+                        <th>Time Complexity</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Subject Selection Handling</td>
+                        <td>O(1)</td>
+                        <td>Using Set operations for adding/removing subjects</td>
+                    </tr>
+                    <tr>
+                        <td>Rendering Subject List</td>
+                        <td>O(n)</td>
+                        <td>Linear traversal of subjects</td>
+                    </tr>
+                    <tr>
+                        <td>Finding Common Subjects</td>
+                        <td>O(n)</td>
+                        <td>Linear filtering of subject arrays</td>
+                    </tr>
+                    <tr>
+                        <td>Sorting Friend Matches</td>
+                        <td>O(n log n)</td>
+                        <td>Using QuickSort algorithm</td>
+                    </tr>
+                    <tr>
+                        <td>Graph Construction</td>
+                        <td>O(n²)</td>
+                        <td>Comparing all subject pairs</td>
+                    </tr>
+                    <tr>
+                        <td>Dijkstra's Algorithm</td>
+                        <td>O((V + E) log V)</td>
+                        <td>Finding shortest paths between subjects</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3>Optimizations Implemented</h3>
+            <p>
+                We've implemented several optimizations to improve the performance of our application:
+            </p>
+            <ol>
+                <li>
+                    <strong>Data Structure Selection:</strong> Using appropriate data structures for each operation
+                    <ul>
+                        <li>Sets for tracking selections (O(1) lookup)</li>
+                        <li>Maps for storing subject and friend data (O(1) lookup)</li>
+                    </ul>
+                </li>
+                <li>
+                    <strong>Lazy Initialization:</strong> Only creating cached data structures when needed
+                    <pre><code>// Inside the Friend class
+get subjectSet() {
+    if (!this._subjectSet) {
+        this._subjectSet = new Set(this.subjects);
+    }
+    return this._subjectSet;
+}</code></pre>
+                </li>
+                <li>
+                    <strong>Early Termination:</strong> Breaking out of loops when conditions are met
+                    <pre><code>// In Dijkstra's algorithm
+if (currentVertex === endVertex) {
+    // Reached the target vertex
+    break;
+}</code></pre>
+                </li>
+                <li>
+                    <strong>Efficient Sorting:</strong> Using QuickSort for better average-case performance compared to other sorting algorithms
+                </li>
+            </ol>
+            
+            <h3>SOLID Principles Application</h3>
+            <p>
+                Our code follows SOLID principles to ensure maintainability and extensibility:
+            </p>
+            <ul>
+                <li>
+                    <strong>Single Responsibility Principle:</strong> Each class has a single responsibility (e.g., Friend class manages friend data, Graph class manages graph operations)
+                </li>
+                <li>
+                    <strong>Open/Closed Principle:</strong> The code is open for extension but closed for modification (e.g., we can add new visualization types without modifying existing code)
+                </li>
+                <li>
+                    <strong>Liskov Substitution Principle:</strong> Objects are replaceable with instances of their subtypes without altering program correctness
+                </li>
+                <li>
+                    <strong>Interface Segregation Principle:</strong> Clients are not forced to depend on interfaces they do not use
+                </li>
+                <li>
+                    <strong>Dependency Inversion Principle:</strong> High-level modules depend on abstractions rather than concrete implementations
+                </li>
+            </ul>
+        </div>
+        
+        <div class="card">
+            <h2>Conclusion</h2>
+            <p>
+                This documentation provides an overview of the algorithms and data structures used in the Life Simulator application.
+                We've implemented efficient algorithms and data structures to handle the subject selection process and visualize relationships
+                between subjects and friends.
+            </p>
+            <p>
+                Key features of our implementation include:
+            </p>
+            <ul>
+                <li>Efficient data structures (Maps, Sets) for O(1) lookups</li>
+                <li>QuickSort algorithm for sorting friend matches</li>
+                <li>Graph representation for subject relationships</li>
+                <li>Dijkstra's algorithm for finding shortest paths</li>
+                <li>Tree visualization for displaying friendship connections</li>
+            </ul>
+            <p>
+                These implementations demonstrate a deep understanding of algorithm design, data structure selection,
+                and optimization techniques that are essential for efficient software development.
+            </p>
+            
+            <a href="index.html" class="nav-button">Return to Simulator</a>
+        </div>
+        
+        <footer class="footer">
+            <p>Life Simulator &copy; 2025 - HSC Subject Selection</p>
+        </footer>
+            
+            <h3>1. QuickSort</h3>
+            <p>
+                QuickSort is a divide-and-conquer sorting algorithm that works by selecting a 'pivot' element and partitioning the array around it.
+            </p>
+            <p>
+                <strong>Time Complexity:</strong> O(n log n) average case, O(n²) worst case where n is the number of elements.
+            </p>
+            <p>
+                <strong>Space Complexity:</strong> O(log n) auxiliary space for the recursive call stack.
+            </p>
+            <p>
+                <strong>Application in our project:</strong> Used to sort the friend matches by their match scores.
+            </p>
+            <pre><code>function quickSort(arr, property, descending = true) {
+    if (arr.length <= 1) {
+        return arr;
+    }
+    
+    const pivot = arr[Math.floor(arr.length / 2)];
+    const pivotValue = pivot[property];
+    
+    const left = [];
+    const middle = [];
+    const right = [];
+    
+    for (let item of arr) {
+        const itemValue = item[property];
+        
+        if (descending) {
+            if (itemValue > pivotValue) left.push(item);
+            else if (itemValue < pivotValue) right.push(item);
+            else middle.push(item);
+        } else {
+            if (itemValue < pivotValue) left.push(item);
+            else if (itemValue > pivotValue) right.push(item);
+            else middle.push(item);
+        }
+    }
+    
+    return [...quickSort(left, property, descending), 
+            ...middle, 
+            ...quickSort(right, property, descending)];
+}
