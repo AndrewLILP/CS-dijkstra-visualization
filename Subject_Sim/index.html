@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Life Simulator - Year 12 Subject Selection</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Life Simulator: Year 12 Journey</h1>
+            <p>Choose your subjects wisely - they'll shape your future!</p>
+            <a href="algorithms.html" style="color: white; text-decoration: underline; font-size: 0.9rem; display: block; margin-top: 10px;">View Algorithm Documentation</a>
+        </header>
+        
+        <div class="card">
+            <h2>Subject Selection</h2>
+            <p>Select 6 subjects for your HSC (including compulsory English and Mathematics).</p>
+            
+            <div class="selection-count">
+                Selected: <span id="selected-count">0</span>/6 subjects
+            </div>
+            
+            <div class="selection-error" id="selection-error">
+                You must select exactly 6 subjects (including English and Mathematics)
+            </div>
+            
+            <ul class="subject-list" id="subject-list">
+                <!-- Subject list will be populated by JavaScript -->
+            </ul>
+            
+            <button class="cta-button" id="submit-btn" disabled>See Your Future</button>
+        </div>
+        
+        <div class="visualization-container" id="visualization-container">
+            <div class="card visualization-card">
+                <h2>Your Subject Network</h2>
+                <p>Here's how your choices connect you with your friends:</p>
+                
+                <div id="friend-matches"></div>
+                
+                <div class="chart-container" id="chart-container"></div>
+                
+                <div style="height: 80px;"></div><!-- Increased spacer -->
+                
+                <button class="cta-button" id="reset-btn">Modify My Selections</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="data.js"></script>
+    <script src="visualization.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
