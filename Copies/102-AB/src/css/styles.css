@@ -1,0 +1,262 @@
+/* Basic Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f5f5f5;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+/* Header */
+header {
+    background: #4285f4;
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+h1 {
+    font-size: 28px;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    font-size: 16px;
+    opacity: 0.9;
+}
+
+/* Main content */
+main {
+    padding: 20px;
+}
+
+/* Graph visualization */
+.visualization-container {
+    margin: 20px 0;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+#graph-canvas {
+    display: block;
+    background: white;
+    width: 100%;
+    height: 500px;
+    border-bottom: 1px solid #eee;
+}
+
+/* Controls */
+.controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 20px 0;
+    padding: 15px;
+    background: #f9f9f9;
+    border-radius: 6px;
+}
+
+.control-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+label {
+    font-weight: bold;
+    min-width: 70px;
+}
+
+select, input {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    flex-grow: 1;
+}
+
+button {
+    padding: 8px 16px;
+    background: #4285f4;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.2s;
+}
+
+button:hover {
+    background: #3367d6;
+}
+
+button:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+button.secondary {
+    background: #f1f1f1;
+    color: #333;
+    border: 1px solid #ddd;
+}
+
+button.secondary:hover {
+    background: #e5e5e5;
+}
+
+/* Results section */
+.results {
+    margin: 20px 0;
+    padding: 0 15px;
+}
+
+.path-info {
+    background: #e8f5e9;
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    border-left: 4px solid #4caf50;
+}
+
+.path-visualization {
+    font-size: 18px;
+    padding: 10px 0;
+}
+
+.no-path {
+    color: #d32f2f;
+}
+
+/* Algorithm explanation */
+.algorithm-explanation {
+    background: #e3f2fd;
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    border-left: 4px solid #2196f3;
+}
+
+.step {
+    margin-bottom: 10px;
+    padding-left: 20px;
+    position: relative;
+}
+
+.step:before {
+    content: "•";
+    position: absolute;
+    left: 5px;
+    color: #2196f3;
+}
+
+/* Sample Graph */
+.sample-graph {
+    background: #f8f9fa;
+    padding: 15px;
+    margin: 20px 0;
+    border-radius: 6px;
+    overflow-x: auto;
+}
+
+.sample-graph pre {
+    margin: 0;
+    font-family: monospace;
+    white-space: pre;
+}
+
+/* Footer */
+footer {
+    margin-top: 30px;
+    text-align: center;
+    padding: 20px;
+    background: #f1f1f1;
+    border-top: 1px solid #ddd;
+    font-size: 14px;
+    color: #666;
+}
+
+/* Legend */
+.legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin: 15px 0;
+    padding: 10px;
+    background: white;
+    border-radius: 4px;
+    border: 1px solid #eee;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.color-box {
+    width: 20px;
+    height: 20px;
+    border-radius: 3px;
+}
+
+.color-default { background: #6495ED; }
+.color-current { background: #FFD700; }
+.color-visited { background: #87CEFA; }
+.color-path { background: #32CD32; }
+.color-start { background: #FF8C00; }
+.color-end { background: #FF4500; }
+
+/* Speed control and navigation buttons removed */
+
+/* Animation progress */
+.progress-bar {
+    height: 10px;
+    background: #f1f1f1;
+    border-radius: 5px;
+    margin: 15px 0;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: #4285f4;
+    width: 0%;
+    transition: width 0.3s;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .control-group {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .path-visualization {
+        font-size: 16px;
+    }
+    
+    #graph-canvas {
+        height: 400px;
+    }
+}

@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dijkstra's Algorithm Visualization</title>
+    <link rel="stylesheet" href="src/css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Dijkstra's Algorithm Visualization</h1>
+            <p class="subtitle">Interactive tool to understand how Dijkstra's algorithm finds the shortest path in a graph</p>
+        </header>
+        
+        <main>
+            <!-- Graph Visualization Canvas -->
+            <div class="visualization-container">
+                <canvas id="graph-canvas"></canvas>
+            </div>
+            
+            <!-- Controls -->
+            <div class="controls">
+                <div class="control-group">
+                    <label for="start-node">Start:</label>
+                    <select id="start-node"></select>
+                </div>
+                
+                <div class="control-group">
+                    <label for="end-node">End:</label>
+                    <select id="end-node"></select>
+                </div>
+                
+                <button id="run-algorithm" class="primary">Run Algorithm</button>
+                <button id="reset-visualization" class="secondary">Reset</button>
+                <button id="generate-graph" class="secondary">Generate New Graph</button>
+            </div>
+            
+            <!-- Animation Progress -->
+            <div class="progress-bar">
+                <div id="progress-fill" class="progress-fill"></div>
+            </div>
+            
+            <!-- Legend -->
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="color-box color-default"></div>
+                    <span>Unvisited Node</span>
+                </div>
+                <div class="legend-item">
+                    <div class="color-box color-current"></div>
+                    <span>Current Node</span>
+                </div>
+                <div class="legend-item">
+                    <div class="color-box color-visited"></div>
+                    <span>Visited Node</span>
+                </div>
+                <div class="legend-item">
+                    <div class="color-box color-path"></div>
+                    <span>Shortest Path</span>
+                </div>
+                <div class="legend-item">
+                    <div class="color-box color-start"></div>
+                    <span>Start Node</span>
+                </div>
+                <div class="legend-item">
+                    <div class="color-box color-end"></div>
+                    <span>End Node</span>
+                </div>
+            </div>
+            
+            <!-- Results -->
+            <div class="results">
+                <h2>Results</h2>
+                <div id="path-info"></div>
+                
+                <!-- Static Graph Display -->
+                <h2>Graph Visualization</h2>
+                <div class="static-graph-container">
+                    <div class="static-graph-title">Final Graph State</div>
+                    <canvas id="static-graph-canvas" class="static-graph-canvas"></canvas>
+                    <div class="static-graph-legend">
+                        <div class="legend-item">
+                            <div class="color-box color-default"></div>
+                            <span>Unvisited Node</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="color-box color-visited"></div>
+                            <span>Visited Node</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="color-box color-path"></div>
+                            <span>Shortest Path</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="color-box color-start"></div>
+                            <span>Start Node</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="color-box color-end"></div>
+                            <span>End Node</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Edge Weight Display -->
+                <h2>Edge Weight</h2>
+                <div id="edge-weight-container"></div>
+                
+                <h2>Algorithm Steps</h2>
+                <div id="algorithm-explanation" class="algorithm-explanation">
+                    <p>Run the algorithm to see step-by-step explanation.</p>
+                </div>
+                
+                <h2>Dijkstra's Algorithm</h2>
+                <div class="sample-graph">
+                    <pre>
+function dijkstra(graph, start) {
+    let distances = {};
+    let previous = {};
+    let pq = new PriorityQueue();
+    
+    // Initialize distances
+    for (let node in graph) {
+        distances[node] = node === start ? 0 : Infinity;
+        previous[node] = null;
+        pq.enqueue(node, distances[node]);
+    }
+    
+    while (!pq.isEmpty()) {
+        let currentNode = pq.dequeue();
+        
+        for (let neighbor in graph[currentNode]) {
+            let newDist = distances[currentNode] + graph[currentNode][neighbor];
+            if (newDist < distances[neighbor]) {
+                distances[neighbor] = newDist;
+                previous[neighbor] = currentNode;
+                pq.enqueue(neighbor, newDist);
+            }
+        }
+    }
+    
+    return { distances, previous };
+}
+        </main>
+        
+        <footer>
+            <p>Created by CS Student for Dijkstra's Algorithm Visualization Project | &copy; 2023</p>
+        </footer>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="src/dijkstra.js"></script>
+    <script src="src/visualization.js"></script>
+    <script src="src/graphData.js"></script>
+    <script src="src/AB.js"></script>
+    <script src="src/staticGraphDisplay.js"></script>
+    <script>
+        // Initialize the application when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            // Get DOM elements
+            const canvas = document.getElementById('graph-canvas');
+            const startNodeSelect = document.getElementById('start-node');
+            const endNodeSelect = document.getElementById('end-node');
+            const runButton = document.getElementById('run-algorithm');
+            const resetButton = document.getElementById('reset-visualization');
+            const generateButton = document.getElementById('generate-graph');
+            // Animation control elements removed
+            const progressFill = document.getElementById('progress-fill');
+            const pathInfoDiv = document.getElementById('path-info');
+            const explanationDiv = document.getElementById('algorithm-explanation');
+            const staticGraphCanvas = document.getElementById('static-graph-canvas');
+            const edgeWeightContainer = document.getElementById('edge-weight-container');
+            
+            // Create graph visualizer
+            const visualizer = new GraphVisualizer(canvas, {
+                nodeRadius: 30,
+                animationSpeed: 1000, // Fixed animation speed
+                onAnimationStep: updateProgress,
+                onAnimationComplete: () => {
+                    // Update static graph display when animation completes
+                    if (currentResult) {
+                        staticGraphDisplay.updateWithResult(currentResult, startNodeSelect.value, endNodeSelect.value);
+                    }
+                }
+            });
+            
+            // Create static graph display
+            const staticGraphDisplay = new StaticGraphDisplay(staticGraphCanvas, {
+                nodeRadius: 20,
+                padding: 20
+            });
+            
+            // Create A-B weight display
+            const abWeightDisplay = new ABWeightDisplay(edgeWeightContainer);
+            
+            // Default graph and animation state
+            let currentGraph = null;
+            let isPlaying = false;
+            let currentResult = null;
+            
+            // Initialize with a sample graph
+            initializeGraph(exampleGraph);
+            
+            // Set graph for static display and AB weight display
+            staticGraphDisplay.setGraph(exampleGraph);
+            abWeightDisplay.setGraph(exampleGraph);
+            
+            // Set up event listeners
+            runButton.addEventListener('click', runAlgorithm);
+            resetButton.addEventListener('click', resetVisualization);
+            generateButton.addEventListener('click', generateNewGraph);
+            // Animation control event listeners removed
+            
+            // Initialize graph and node selectors
+            function initializeGraph(graph) {
+                currentGraph = graph;
+                visualizer.setGraph(graph);
+                
+                // Reset UI elements
+                startNodeSelect.innerHTML = '';
+                endNodeSelect.innerHTML = '';
+                
+                // Populate node selectors
+                for (const node in graph) {
+                    const startOption = document.createElement('option');
+                    startOption.value = node;
+                    startOption.textContent = node;
+                    startNodeSelect.appendChild(startOption);
+                    
+                    const endOption = document.createElement('option');
+                    endOption.value = node;
+                    endOption.textContent = node;
+                    endNodeSelect.appendChild(endOption);
+                }
+                
+                // Set defaults
+                startNodeSelect.value = Object.keys(graph)[0];
+                endNodeSelect.value = Object.keys(graph)[Object.keys(graph).length - 1];
+                
+                // Update static graph display
+                staticGraphDisplay.setGraph(graph);
+                
+                // Update A-B weight display
+                abWeightDisplay.setGraph(graph);
+                
+                resetVisualization();
+            }
+            
+            // Run Dijkstra's algorithm
+            function runAlgorithm() {
+                const startNode = startNodeSelect.value;
+                const endNode = endNodeSelect.value;
+                
+                // Run the algorithm
+                currentResult = findShortestPath(currentGraph, startNode, endNode);
+                
+                // Display path information
+                pathInfoDiv.innerHTML = '';
+                pathInfoDiv.appendChild(createPathInfoDisplay(currentResult, startNode, endNode));
+                
+                // Display algorithm explanation
+                explanationDiv.innerHTML = '';
+                const explanationSteps = createAlgorithmExplanation(currentResult, startNode, endNode);
+                
+                for (const step of explanationSteps) {
+                    const stepDiv = document.createElement('div');
+                    stepDiv.className = 'step';
+                    stepDiv.textContent = step;
+                    explanationDiv.appendChild(stepDiv);
+                }
+                
+                // Update A-B weight display with result
+                abWeightDisplay.updateWithResult(currentResult);
+                
+                // Run the visualization
+                visualizer.visualizeDijkstra(currentResult, startNode, endNode);
+                
+                // Update UI state
+                isPlaying = true;
+                runButton.disabled = true;
+                
+                // Scroll to results
+                setTimeout(() => {
+                    pathInfoDiv.scrollIntoView({ behavior: 'smooth' });
+                }, 300);
+            }
+            
+            // Reset the visualization
+            function resetVisualization() {
+                // Reset the visualizer
+                visualizer.setGraph(currentGraph);
+                
+                // Clear results
+                pathInfoDiv.innerHTML = '<p>Run the algorithm to see results.</p>';
+                explanationDiv.innerHTML = '<p>Run the algorithm to see step-by-step explanation.</p>';
+                
+                // Reset progress bar
+                progressFill.style.width = '0%';
+                
+                // Reset UI state
+                isPlaying = false;
+                runButton.disabled = false;
+                
+                // Clear current result
+                currentResult = null;
+            }
+            
+            // Generate a new random graph
+            function generateNewGraph() {
+                const nodeCount = Math.floor(Math.random() * 4) + 5; // 5-8 nodes
+                const graph = generateRandomGraph(nodeCount, 0.4);
+                initializeGraph(graph);
+            }
+            
+            // Animation control functions removed
+            
+            // Update progress bar
+            function updateProgress(currentStep, totalSteps) {
+                const progress = (currentStep / totalSteps) * 100;
+                progressFill.style.width = `${progress}%`;
+                
+                // Animation controls removed
+            }
+            
+            // Handle window resize
+            window.addEventListener('resize', () => {
+                if (visualizer) {
+                    visualizer._resizeCanvas();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
